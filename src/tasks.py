@@ -1,16 +1,30 @@
 from datetime import datetime
 from typing import Any, Dict, List, Optional
 
+VALID_PRIORITIES = {"low", "medium", "high"}
+_PRIORITY_ORDER = {"high": 0, "medium": 1, "low": 2}
 
-def create_task(id: int, title: str) -> Dict[str, Any]:
+
+def create_task(id: int, title: str, priority: str = "medium") -> Dict[str, Any]:
     if not title or not title.strip():
         raise ValueError("Title cannot be empty or whitespace.")
+    if priority not in VALID_PRIORITIES:
+        raise ValueError(f"Invalid priority '{priority}'. Must be one of: low, medium, high.")
     return {
         "id": id,
         "title": title,
         "status": "pending",
+        "priority": priority,
         "created_at": datetime.now().isoformat(timespec="seconds"),
     }
+
+
+def sort_by_priority(tasks: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
+    return sorted(tasks, key=lambda t: _PRIORITY_ORDER.get(t.get("priority", "medium"), 1))
+
+
+def filter_by_priority(tasks: List[Dict[str, Any]], priority: str) -> List[Dict[str, Any]]:
+    return [t for t in tasks if t.get("priority", "medium") == priority]
 
 
 def next_id(tasks: List[Dict[str, Any]]) -> int:
