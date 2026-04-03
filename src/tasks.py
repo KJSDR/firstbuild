@@ -25,3 +25,18 @@ def mark_done(tasks: List[Dict[str, Any]], task_id: int) -> List[Dict[str, Any]]
             task["status"] = "done"
             return tasks
     raise ValueError(f"Task {task_id} not found.")
+
+
+def delete_task(tasks: List[Dict[str, Any]], task_id: int) -> List[Dict[str, Any]]:
+    for task in tasks:
+        if task["id"] == task_id:
+            return [t for t in tasks if t["id"] != task_id]
+    raise ValueError(f"Task {task_id} not found.")
+
+
+def list_tasks(
+    tasks: List[Dict[str, Any]], status: Optional[str] = None
+) -> List[Dict[str, Any]]:
+    if status is None:
+        return tasks
+    return [t for t in tasks if t["status"] == status]
