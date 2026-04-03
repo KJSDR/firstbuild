@@ -1,0 +1,18 @@
+# Runtime data
+tasks.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+.coverage
+htmlcov/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# macOS
+.DS_Store
