@@ -7,7 +7,6 @@ with ImportError until src/storage.py is written.
 """
 
 import json
-import pytest
 from src.storage import load_tasks, save_tasks
 
 

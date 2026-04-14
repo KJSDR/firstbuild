@@ -96,3 +96,32 @@ python -m src delete 1
 - Do not introduce external dependencies without discussion.
 - Do not write tests that mock the storage layer; use real temp files.
 - Do not put business logic in `cli.py` — it should only parse and dispatch.
+
+## Known AI Hallucination Patterns
+
+Things caught in this project where AI-generated code drifted from reality. Add new findings here.
+
+### Deprecated type aliases
+**Pattern:** Agent uses `from typing import Dict, List, Optional` instead of built-in generics.
+**Reality:** Python 3.9+ supports `dict[str, Any]`, `list[str]`, `str | None` directly. The `typing.Dict`/`typing.List` aliases are soft-deprecated since 3.9.
+**Fix:** Use lowercase built-ins for new code. The project target is Python 3.11+.
+
+### Optional parameters typed as bare type
+**Pattern:** Agent writes `def main(argv: list = None)` instead of `def main(argv: list | None = None)`.
+**Reality:** mypy rejects this — `None` is not assignable to `list`. Always use `X | None` (or `Optional[X]`) when a parameter can be `None`.
+**Fix:** `def main(argv: list[str] | None = None, ...)`
+
+### Dead utility functions
+**Pattern:** Agent implements a helper (`sort_by_priority`) with full tests but never calls it from the CLI layer.
+**Reality:** The function is tested in isolation but has no effect on user-facing behavior.
+**Fix:** Before writing a utility, confirm it is wired into the call site. If it isn't needed yet, don't add it.
+
+### subprocess tests hide coverage gaps
+**Pattern:** Agent writes CLI tests using `subprocess.run`, which passes in CI but records 0% coverage for `cli.py`.
+**Reality:** Coverage tools only instrument the current process. Child processes are invisible unless you configure `coverage` with `COVERAGE_PROCESS_START`.
+**Fix:** Supplement subprocess tests with direct unit tests that call `cmd_*` functions or `build_parser()` in-process, or configure `pytest-cov` with `--cov-branch` and a `.coveragerc` that enables subprocess tracking.
+
+### Spec vs. CLAUDE.md drift
+**Pattern:** `spec.md` and `CLAUDE.md` described `list` default behavior differently (`all` vs. `pending by default`).
+**Reality:** Two documents diverged; code matched one but not the other.
+**Fix:** Treat `spec.md` as the single source of truth for behavior. Keep `CLAUDE.md` in sync when spec changes.
