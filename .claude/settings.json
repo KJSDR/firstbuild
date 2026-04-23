@@ -1,0 +1,15 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "cd /Users/killiand/Desktop/Ecole/ACSQ8/ACS4220/firstbuild && pytest -q 2>&1 | tail -10"
+          }
+        ]
+      }
+    ]
+  }
+}
